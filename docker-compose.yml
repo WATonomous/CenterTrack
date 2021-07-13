@@ -5,7 +5,6 @@ services:
     image: centertrack_dev
     build:
       context: .
-    stdin_open: true
     tty: true
     working_dir: /work
     ipc: host
