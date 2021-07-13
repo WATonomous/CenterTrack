@@ -27,6 +27,7 @@ sudo service docker restart
 2. Start the container. Some assumptions have been made in `docker-compose.yml` (e.g. where the data is stored). Edit the file if needed.
 
 ```bash
+touch .env && echo "COMPOSE_PROJECT_NAME=centertrack_$USER" >> .env
 docker-compose up -d
 ```
 
