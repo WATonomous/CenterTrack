@@ -14,6 +14,8 @@ DATA_PATH = '../../data/road/'
 ANNOTATIONS_PATH = os.path.join(DATA_PATH, "road_trainval_v1.0.json")
 VIDEOS_DIR = "videos/"
 IMAGES_DIR = "rgb-images/"
+# The max number of frames in a video
+MAX_NUM_FRAMES = 10**5
 
 '''
 ROAD Dataset Annotation Structure: https://github.com/gurkirt/road-dataset#annotation-structure
@@ -45,8 +47,11 @@ def format_videoes(annotations: Dict[str, Any]) -> List[Dict[str, Any]]:
 #   - video_id: the current ID of the video the frame belongs to
 # - Returns: Formatted JSON of identifying the frames in a video
 def format_frames(frame_names: List[str], video_id: int) -> List[Dict[str, Any]]:
+  if len(frame_names) > MAX_NUM_FRAMES:
+    raise Exception(f"number of frames ({len(frame_names)}) in video {video_id} exceeds the maximum number of frames per video supported by this script ({MAX_NUM_FRAMES})")
+
   return [{'file_name': label, 
-           'id': i + 1, 
+           'id': MAX_NUM_FRAMES * video_id + i + 1,
            'frame_id': i + 1, 
            'video_id': video_id } for i, label in enumerate(frame_names)]
 
