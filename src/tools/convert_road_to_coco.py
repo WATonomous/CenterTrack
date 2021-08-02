@@ -41,6 +41,9 @@ def format_videoes(annotations: Dict[str, Any]) -> List[Dict[str, Any]]:
   videos = [os.path.join(VIDEOS_DIR, video_name) for video_name in list(annotations['db'].keys())]
   return [{'file_name': label, 'id': i + 1} for i, label in enumerate(videos)]
 
+def make_image_id(video_id:int, frame_id:int):
+  return MAX_NUM_FRAMES * video_id + frame_id
+
 # format frames
 # - Parameters:
 #   - frame_names: List frame image files, relative to the dataset root directory
@@ -51,8 +54,8 @@ def format_frames(frame_names: List[str], video_id: int) -> List[Dict[str, Any]]
     raise Exception(f"number of frames ({len(frame_names)}) in video {video_id} exceeds the maximum number of frames per video supported by this script ({MAX_NUM_FRAMES})")
 
   return [{'file_name': label, 
-           'id': MAX_NUM_FRAMES * video_id + i + 1,
-           'frame_id': i + 1, 
+           'id': make_image_id(video_id, i+1),
+           'frame_id': i+1, 
            'video_id': video_id } for i, label in enumerate(frame_names)]
 
 # Road BBOX: [xmin, ymin, xmax, ymax] normalized to 0, 1
@@ -105,7 +108,7 @@ def main():
         # TODO: Tube level labels
         # tube_id = next(tube_id for tube_id in list(db[video_name]['agent_tubes'].keys()) if tube_id.startswith(annotation['tube_uid']))
         coco_annotation = {
-               'image_id': frame_id,
+               'image_id': make_image_id(video_id,int(frame_id)),
                'id': int(annotation_id, 16), # Hex string to int
                'category_id': annotation['agent_ids'][0] + 1, # convert to 1-indexed ID 
                'loc_ids': [x + 1 for x in annotation['loc_ids']],
